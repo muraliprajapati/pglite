@@ -26,8 +26,13 @@ function useLiveQueryImpl<T = { [key: string]: unknown }>(
   const paramsRef = useRef(params)
   const liveQueryRef = useRef<LiveQuery<T> | undefined>()
   let liveQuery: LiveQuery<T> | undefined
+  let newLiveQuery = false
   if (!(typeof query === 'string') && !(query instanceof Promise)) {
     liveQuery = query
+    if (liveQueryRef.current !== liveQuery) {
+      newLiveQuery = true
+    }
+    liveQueryRef.current = liveQuery
   }
   const [results, setResults] = useState<LiveQueryResults<T> | undefined>(
     liveQuery?.initialResults,
@@ -77,6 +82,10 @@ function useLiveQueryImpl<T = { [key: string]: unknown }>(
       throw new Error('Should never happen')
     }
   }, [db, key, query, currentParams, liveQuery])
+
+  if (newLiveQuery && liveQuery) {
+    return liveQuery.initialResults
+  }
 
   return (
     results && {
