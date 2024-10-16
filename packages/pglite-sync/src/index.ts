@@ -125,7 +125,7 @@ async function createPlugin(
                   // TODO: sync into shadow table and reference count
                   // for now just clear the whole table - will break
                   // cases with multiple shapes on the same table
-                  await tx.exec(`TRUNCATE ${options.table};`)
+                  await tx.exec(`DELETE FROM ${options.table};`)
                   if (options.shapeKey) {
                     await deleteShapeSubscriptionState({
                       pg: tx,
